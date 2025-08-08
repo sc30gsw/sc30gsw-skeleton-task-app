@@ -1,5 +1,10 @@
 import { createRoute, OpenAPIHono } from '@hono/zod-openapi'
 import { describe, expect, it, vi } from 'vitest'
+import { getTasksRoute, taskApi } from '~/features/tasks/api/route'
+import {
+  errorResponseSchema,
+  taskListResponseSchema,
+} from '~/features/tasks/types/schema/task-schema'
 
 vi.mock('~/db', () => ({
   db: {},
@@ -11,12 +16,6 @@ vi.mock('@t3-oss/env-nextjs', () => ({
     DATABASE_AUTH_TOKEN: 'mock-token',
   },
 }))
-
-import { getTasksRoute, taskApi } from '~/features/tasks/api/route'
-import {
-  errorResponseSchema,
-  taskListResponseSchema,
-} from '~/features/tasks/types/schema/task-schema'
 
 describe('Task API Routes', () => {
   describe('getTasksRoute', () => {

@@ -1,5 +1,7 @@
 import type { RouteHandler } from '@hono/zod-openapi'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { getTasksHandler } from '~/features/tasks/api/handler'
+import type { getTasksRoute } from '~/features/tasks/api/route'
 
 const { mockTaskServiceInstance } = vi.hoisted(() => {
   const createMockTaskService = () => ({
@@ -14,9 +16,6 @@ const { mockTaskServiceInstance } = vi.hoisted(() => {
 vi.mock('~/features/tasks/services/task-service', () => ({
   TaskService: vi.fn().mockImplementation(() => mockTaskServiceInstance),
 }))
-
-import { getTasksHandler } from '~/features/tasks/api/handler'
-import type { getTasksRoute } from '~/features/tasks/api/route'
 
 describe('getTasksHandler', () => {
   let mockContext: any
@@ -147,7 +146,6 @@ describe('getTasksHandler', () => {
 
   describe('型安全性とインターフェース', () => {
     it('ハンドラーがRouteHandlerの型に適合する', () => {
-      // Type check: This should not cause TypeScript errors
       const handler: RouteHandler<typeof getTasksRoute> = getTasksHandler
       expect(handler).toBeDefined()
     })

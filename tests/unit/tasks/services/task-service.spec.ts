@@ -1,5 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { db } from '~/db'
 import { TASK_ERROR_MESSAGES } from '~/features/tasks/constants/validation'
+import { TaskService } from '~/features/tasks/services/task-service'
 
 vi.mock('~/db', () => ({
   db: {
@@ -27,9 +29,6 @@ vi.mock('~/db/schema', () => ({
     id: 'id',
   },
 }))
-
-import { db } from '~/db'
-import { TaskService } from '~/features/tasks/services/task-service'
 
 const mockDb = vi.mocked(db)
 
