@@ -4,9 +4,14 @@
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
-    "build": "next build",
+    "build:clean": "rm -rf .next && next build",
     "start": "next start",
-    "lint": "next lint"
+    "tsc": "tsc --noEmit",
+    "lint": "biome lint --write ./src ./tests",
+    "format": "biome format --write ./src ./tests",
+    "check": "biome check --write ./src ./tests",
+    "test:unit": "vitest run",
+    "test:e2e": "playwright test"
   },
   "dependencies": {
     "@conform-to/react": "^1.8.2",
