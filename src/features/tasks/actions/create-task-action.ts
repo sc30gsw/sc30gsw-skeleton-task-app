@@ -2,6 +2,8 @@
 
 import type { SubmissionResult } from '@conform-to/react'
 import { parseWithZod } from '@conform-to/zod/v4'
+import { revalidateTag } from 'next/cache'
+import { FETCH_ALL_TASKS_CACHE_KEY } from '~/constants/cache-keys'
 import { TASK_ERROR_MESSAGES } from '~/features/tasks/constants/validation'
 
 import { TaskService } from '~/features/tasks/services/task-service'
@@ -15,10 +17,11 @@ export async function createTaskAction(_: unknown, formData: FormData) {
   if (submission.status !== 'success') {
     return submission.reply()
   }
+
   try {
     taskService.createTask(submission.value.title)
 
-    // revalidateTag(FETCH_ALL_TASKS_CACHE_KEY)
+    revalidateTag(FETCH_ALL_TASKS_CACHE_KEY)
     return submission.reply()
   } catch (_) {
     return {
