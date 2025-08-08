@@ -186,18 +186,23 @@ bunx --bun shadcn@latest add button
   |     └ schema.ts : テーブルスキーマ定義
   ├ tests: テストコード
   |  ├ unit: Unit テストコード
-  |  |  ├ api: apiのUnit テストコード
+  |  |  ├ utils: アプリケーション全体で使用する utilityのUnit テストコード
   |  |  | 　└ *-spec.ts: テストコード
-  |  |  ├ utils: utilityのUnit テストコード
+  |  |  ├ components: アプリケーション全体で使用する componentのUnit テストコード
   |  |  | 　└ *-spec.ts: テストコード
-  |  |  ├ components: componentのUnit テストコード
-  |  |  | 　└ *-spec.ts: テストコード
-  |  |  └ hooks: hooksのUnit テストコード
-  |  |    　└ *-hook-spec.ts: テストコード
+  |  |  ├ hooks: アプリケーション全体で使用するhooksのUnit テストコード
+  |  |  |   └ *-hook-spec.ts: テストコード
+  |  |  ├ tasks: tasks feature unit テスト ディレクトリ
+  |  |  |   ├ api: apiのUnit テストコード
+  |  |  |   |  └ *-spec.ts: テストコード
+  |  |  |   ├ utils: utilityのUnit テストコード
+  |  |  |   | └ *-spec.ts: テストコード
+  |  |  |   ├ components: componentのUnit テストコード
+  |  |  |   |  └ *-spec.ts: テストコード
+  |  |  |   └ hooks: hooksのUnit テストコード
+  |  |  | 　  └ *-spec.ts: テストコード
   |  └ e2e: E2E テストコード
   |     └  tasks: utilityのUnit テストコード
-  |          ├ screenshots: テストで取得したスクリーンショットを格納（Visual Regression Testing用）
-  |          |    └ *.png : 任意の画面または要素のスクリーンショット
   |          └ *-spec.ts: テストコード
   ├ .env.* : 環境変数定義ファイル
   ├ .env.test : テスト用の環境変数定義ファイル
