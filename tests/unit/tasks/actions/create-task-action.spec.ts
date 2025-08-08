@@ -110,10 +110,10 @@ describe('createTaskAction', () => {
       expect(mockRevalidateTag).not.toHaveBeenCalled()
       expect(mockSubmission.reply).not.toHaveBeenCalled()
 
-      const expectedResult: SubmissionResult = {
+      const expectedResult = {
         status: 'error',
         error: { message: [TASK_ERROR_MESSAGES.TASK_CREATE_FAILED.message] },
-      }
+      } as const satisfies SubmissionResult
       expect(result).toEqual(expectedResult)
     })
   })
