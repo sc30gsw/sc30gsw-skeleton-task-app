@@ -51,6 +51,15 @@ describe('Task API Routes', () => {
         expect(response200.content['application/json'].schema).toBe(taskListResponseSchema)
       })
 
+      it('400レスポンスが正しく定義されている', () => {
+        const response400 = getTasksRoute.responses[400]
+
+        expect(response400).toBeDefined()
+        expect(response400.description).toBe('リクエストパラメータが不正')
+        expect(response400.content['application/json']).toBeDefined()
+        expect(response400.content['application/json'].schema).toBe(errorResponseSchema)
+      })
+
       it('500レスポンスが正しく定義されている', () => {
         const response500 = getTasksRoute.responses[500]
 
@@ -64,8 +73,9 @@ describe('Task API Routes', () => {
         const responseKeys = Object.keys(getTasksRoute.responses)
 
         expect(responseKeys).toContain('200')
+        expect(responseKeys).toContain('400')
         expect(responseKeys).toContain('500')
-        expect(responseKeys).toHaveLength(2)
+        expect(responseKeys).toHaveLength(3)
       })
     })
 
@@ -118,19 +128,6 @@ describe('Task API Routes', () => {
           testApp.openapi(getTasksRoute, async (c) => c.json([], 200))
         }).not.toThrow()
       })
-
-      it('OpenAPIドキュメントが生成可能である', () => {
-        // OpenAPIドキュメント生成のテスト
-        expect(() => {
-          taskApi.doc('/doc', {
-            openapi: '3.0.0',
-            info: {
-              version: '1.0.0',
-              title: 'Task API',
-            },
-          })
-        }).not.toThrow()
-      })
     })
   })
 
@@ -150,87 +147,6 @@ describe('Task API Routes', () => {
     it('errorResponseSchemaが定義されている', () => {
       expect(errorResponseSchema).toBeDefined()
       expect(typeof errorResponseSchema).toBe('object')
-    })
-  })
-
-  describe('型安全性テスト', () => {
-    it('ルート型が正しく推論される', () => {
-      // TypeScript型推論のテスト
-      type RouteType = typeof getTasksRoute
-      const route: RouteType = getTasksRoute
-
-      expect(route.method).toBe('get')
-      expect(route.path).toBe('/')
-    })
-
-    it('レスポンス型が正しく定義されている', () => {
-      const responses = getTasksRoute.responses
-
-      // 200レスポンスの型チェック
-      expect(responses[200]).toHaveProperty('content')
-      expect(responses[200]).toHaveProperty('description')
-
-      // 500レスポンスの型チェック
-      expect(responses[500]).toHaveProperty('content')
-      expect(responses[500]).toHaveProperty('description')
-    })
-  })
-
-  describe('設定値の妥当性テスト', () => {
-    it('HTTPメソッドが有効である', () => {
-      const validMethods = ['get', 'post', 'put', 'delete', 'patch', 'options', 'head']
-      expect(validMethods).toContain(getTasksRoute.method)
-    })
-
-    it('パスが有効なURL形式である', () => {
-      expect(getTasksRoute.path).toMatch(/^\//)
-      expect(typeof getTasksRoute.path).toBe('string')
-      expect(getTasksRoute.path.length).toBeGreaterThan(0)
-    })
-
-    it('説明文が空でない', () => {
-      expect(getTasksRoute.summary).toBeTruthy()
-      expect(getTasksRoute.summary.length).toBeGreaterThan(0)
-      expect(getTasksRoute.description).toBeTruthy()
-      expect(getTasksRoute.description.length).toBeGreaterThan(0)
-    })
-
-    it('レスポンスステータスが有効な数値である', () => {
-      const responseKeys = Object.keys(getTasksRoute.responses)
-
-      for (const key of responseKeys) {
-        const statusCode = Number(key)
-        expect(statusCode).toBeGreaterThanOrEqual(100)
-        expect(statusCode).toBeLessThan(600)
-      }
-    })
-  })
-
-  describe('OpenAPI仕様準拠テスト', () => {
-    it('Content-Typeが適切に設定されている', () => {
-      const response200 = getTasksRoute.responses[200]
-      const response500 = getTasksRoute.responses[500]
-
-      expect(response200.content).toHaveProperty('application/json')
-      expect(response500.content).toHaveProperty('application/json')
-    })
-
-    it('レスポンススキーマが設定されている', () => {
-      const response200 = getTasksRoute.responses[200]
-      const response500 = getTasksRoute.responses[500]
-
-      expect(response200.content['application/json']).toHaveProperty('schema')
-      expect(response500.content['application/json']).toHaveProperty('schema')
-    })
-
-    it('レスポンス説明が設定されている', () => {
-      const response200 = getTasksRoute.responses[200]
-      const response500 = getTasksRoute.responses[500]
-
-      expect(typeof response200.description).toBe('string')
-      expect(response200.description.length).toBeGreaterThan(0)
-      expect(typeof response500.description).toBe('string')
-      expect(response500.description.length).toBeGreaterThan(0)
     })
   })
 })

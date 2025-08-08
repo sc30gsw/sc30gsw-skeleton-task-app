@@ -19,6 +19,14 @@ export const getTasksRoute = createRoute({
       },
       description: 'タスク一覧の取得に成功',
     },
+    400: {
+      content: {
+        'application/json': {
+          schema: errorResponseSchema,
+        },
+      },
+      description: 'リクエストパラメータが不正',
+    },
     500: {
       content: {
         'application/json': {
