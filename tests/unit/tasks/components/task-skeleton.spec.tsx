@@ -12,7 +12,6 @@ describe('TaskSkeleton', () => {
   it('正しい数のスケルトンアイテムがレンダリングされる', () => {
     const { container } = render(<TaskSkeleton />)
 
-
     const skeletons = container.querySelectorAll('[data-slot="skeleton"]')
     expect(skeletons).toHaveLength(4)
   })

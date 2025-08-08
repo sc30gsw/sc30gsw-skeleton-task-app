@@ -1,28 +1,33 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import type { Task } from '~/db/schema'
 import { updateTaskStatusAction } from '~/features/tasks/actions/update-task-status-action'
+import { TASK_STATUS } from '~/features/tasks/constants/task'
 import { TASK_ERROR_MESSAGES, TASK_SUCCESS_MESSAGES } from '~/features/tasks/constants/validation'
-import { TaskService } from '~/features/tasks/services/task-service'
 import { updateTaskSchema } from '~/features/tasks/types/schema/task-schema'
 import type { ActionsResult } from '~/types/action-result'
-
-const mockUpdateTaskStatus = vi.fn()
-vi.mock('~/features/tasks/services/task-service')
-const MockedTaskService = vi.mocked(TaskService)
 
 vi.mock('~/db/index.ts', () => ({
   db: {},
 }))
 
+vi.mock('~/features/tasks/services/task-service', () => {
+  const mockUpdateTaskStatus = vi.fn()
+  const MockTaskService = vi.fn().mockImplementation(() => ({
+    updateTaskStatus: mockUpdateTaskStatus,
+  }))
+
+  return {
+    TaskService: MockTaskService,
+    mockUpdateTaskStatus,
+  }
+})
+
+const taskServiceModule = await import('~/features/tasks/services/task-service')
+const mockUpdateTaskStatus = (taskServiceModule as any).mockUpdateTaskStatus
+
 describe('updateTaskStatusAction', () => {
   beforeEach(() => {
     vi.clearAllMocks()
-    MockedTaskService.mockImplementation(
-      () =>
-        ({
-          updateTaskStatus: mockUpdateTaskStatus,
-        }) as any,
-    )
   })
 
   afterEach(() => {
@@ -30,9 +35,9 @@ describe('updateTaskStatusAction', () => {
   })
 
   describe('正常フロー', () => {
-    it.skip('タスクステータスを完了に正常に更新する', async () => {
-      const taskId = 'task-123' as Task['id']
-      const status = 'completed' as Task['status']
+    it('タスクステータスを完了に正常に更新する', async () => {
+      const taskId = crypto.randomUUID()
+      const status = TASK_STATUS.COMPLETE
       mockUpdateTaskStatus.mockReturnValue(undefined)
 
       const result = await updateTaskStatusAction(taskId, status)
@@ -46,9 +51,9 @@ describe('updateTaskStatusAction', () => {
       expect(result).toEqual(expectedResult)
     })
 
-    it.skip('タスクステータスを保留に正常に更新する', async () => {
-      const taskId = 'task-456' as Task['id']
-      const status = 'pending' as Task['status']
+    it('タスクステータスを保留に正常に更新する', async () => {
+      const taskId = crypto.randomUUID()
+      const status = TASK_STATUS.INCOMPLETE
       mockUpdateTaskStatus.mockReturnValue(undefined)
 
       const result = await updateTaskStatusAction(taskId, status)
@@ -60,14 +65,14 @@ describe('updateTaskStatusAction', () => {
 
   describe('バリデーションエラー', () => {
     it('無効なタスクIDでエラーを返す', async () => {
-      const invalidTaskId = '' as Task['id']
-      const status = 'completed' as Task['status']
+      const invalidTaskId = ''
+      const status = TASK_STATUS.COMPLETE
 
       const result = await updateTaskStatusAction(invalidTaskId, status)
 
       expect(mockUpdateTaskStatus).not.toHaveBeenCalled()
 
-      const expectedResult: ActionsResult = {
+      const expectedResult = {
         isSuccess: false,
         error: { message: TASK_ERROR_MESSAGES.INVALID_TASK_ID.message },
       }
@@ -75,14 +80,14 @@ describe('updateTaskStatusAction', () => {
     })
 
     it('無効なステータスでエラーを返す', async () => {
-      const taskId = 'task-123' as Task['id']
+      const taskId = crypto.randomUUID()
       const invalidStatus = 'invalid_status' as Task['status']
 
       const result = await updateTaskStatusAction(taskId, invalidStatus)
 
       expect(mockUpdateTaskStatus).not.toHaveBeenCalled()
 
-      const expectedResult: ActionsResult = {
+      const expectedResult = {
         isSuccess: false,
         error: { message: TASK_ERROR_MESSAGES.INVALID_TASK_ID.message },
       }
@@ -91,7 +96,7 @@ describe('updateTaskStatusAction', () => {
 
     it('nullタスクIDでエラーを返す', async () => {
       const nullTaskId = null as unknown as Task['id']
-      const status = 'completed' as Task['status']
+      const status = TASK_STATUS.COMPLETE
 
       const result = await updateTaskStatusAction(nullTaskId, status)
 
@@ -100,7 +105,7 @@ describe('updateTaskStatusAction', () => {
     })
 
     it('nullステータスでエラーを返す', async () => {
-      const taskId = 'task-123' as Task['id']
+      const taskId = crypto.randomUUID()
       const nullStatus = null as unknown as Task['status']
 
       const result = await updateTaskStatusAction(taskId, nullStatus)
@@ -111,9 +116,9 @@ describe('updateTaskStatusAction', () => {
   })
 
   describe('サービスエラー', () => {
-    it.skip('TaskService updateTaskStatusエラーを処理する', async () => {
-      const taskId = 'task-123' as Task['id']
-      const status = 'completed' as Task['status']
+    it('TaskService updateTaskStatusエラーを処理する', async () => {
+      const taskId = crypto.randomUUID()
+      const status = TASK_STATUS.COMPLETE
       mockUpdateTaskStatus.mockImplementation(() => {
         throw new Error('データベースエラー')
       })
@@ -122,16 +127,16 @@ describe('updateTaskStatusAction', () => {
 
       expect(mockUpdateTaskStatus).toHaveBeenCalledWith(taskId, status)
 
-      const expectedResult: ActionsResult = {
+      const expectedResult = {
         isSuccess: false,
         error: { message: TASK_ERROR_MESSAGES.TASK_UPDATE_FAILED.message },
       }
       expect(result).toEqual(expectedResult)
     })
 
-    it.skip('TaskServiceがカスタムエラーをスローするのを処理する', async () => {
-      const taskId = 'task-123' as Task['id']
-      const status = 'completed' as Task['status']
+    it('TaskServiceがカスタムエラーをスローするのを処理する', async () => {
+      const taskId = crypto.randomUUID()
+      const status = TASK_STATUS.COMPLETE
       const customError = new Error('タスクが見つかりません')
       customError.name = 'TaskServiceError'
       mockUpdateTaskStatus.mockImplementation(() => {
@@ -150,8 +155,8 @@ describe('updateTaskStatusAction', () => {
 
   describe('エッジケース', () => {
     it('有効なタスクステータスを処理する', async () => {
-      const taskId = 'task-123' as Task['id']
-      const validStatuses: Task['status'][] = ['incomplete', 'complete'] // 一般的なタスクステータスに基づく
+      const taskId = crypto.randomUUID()
+      const validStatuses = ['incomplete', 'complete'] as const satisfies Task['status'][] // 一般的なタスクステータスに基づく
       mockUpdateTaskStatus.mockReturnValue(undefined)
 
       for (const status of validStatuses) {
@@ -163,9 +168,9 @@ describe('updateTaskStatusAction', () => {
       }
     })
 
-    it.skip('同時ステータス更新を処理する', async () => {
-      const taskId = 'task-123' as Task['id']
-      const status = 'completed' as Task['status']
+    it('同時ステータス更新を処理する', async () => {
+      const taskId = crypto.randomUUID()
+      const status = TASK_STATUS.COMPLETE
       mockUpdateTaskStatus.mockReturnValue(undefined)
 
       const results = await Promise.all([
@@ -181,8 +186,8 @@ describe('updateTaskStatusAction', () => {
     })
 
     it('非常に長いタスクIDを処理する', async () => {
-      const longTaskId = 'a'.repeat(1000) as Task['id']
-      const status = 'completed' as Task['status']
+      const longTaskId = 'a'.repeat(1000)
+      const status = TASK_STATUS.COMPLETE
       mockUpdateTaskStatus.mockReturnValue(undefined)
 
       const result = await updateTaskStatusAction(longTaskId, status)
@@ -197,8 +202,8 @@ describe('updateTaskStatusAction', () => {
 
   describe('戻り値型の一貫性', () => {
     it('成功時に一貫したActionsResult型を返す', async () => {
-      const taskId = 'task-123' as Task['id']
-      const status = 'completed' as Task['status']
+      const taskId = crypto.randomUUID()
+      const status = TASK_STATUS.COMPLETE
       mockUpdateTaskStatus.mockReturnValue(undefined)
 
       const result = await updateTaskStatusAction(taskId, status)
@@ -214,8 +219,8 @@ describe('updateTaskStatusAction', () => {
     })
 
     it('エラー時に一貫したActionsResult型を返す', async () => {
-      const invalidTaskId = '' as Task['id']
-      const status = 'completed' as Task['status']
+      const invalidTaskId = ''
+      const status = TASK_STATUS.COMPLETE
 
       const result = await updateTaskStatusAction(invalidTaskId, status)
 
@@ -230,8 +235,8 @@ describe('updateTaskStatusAction', () => {
 
   describe('バグ検出テスト', () => {
     it('成功メッセージの潜在的バグを検出する', async () => {
-      const taskId = 'task-123' as Task['id']
-      const status = 'completed' as Task['status']
+      const taskId = crypto.randomUUID()
+      const status = TASK_STATUS.COMPLETE
       mockUpdateTaskStatus.mockReturnValue(undefined)
 
       const result = await updateTaskStatusAction(taskId, status)

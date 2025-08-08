@@ -11,7 +11,12 @@ export function TaskCreateForm() {
   const { form, action, isPending, fields } = useCreateTask()
 
   return (
-    <form {...getFormProps(form)} action={action} className="space-y-4" data-testid="task-create-form">
+    <form
+      {...getFormProps(form)}
+      action={action}
+      className="space-y-4"
+      data-testid="task-create-form"
+    >
       <div className="space-y-2">
         <Label htmlFor="title" className="cursor-text font-medium text-foreground text-sm">
           タスクタイトル
@@ -26,7 +31,12 @@ export function TaskCreateForm() {
           aria-label="タスクタイトル入力欄"
         />
 
-        <span id={fields.title.errorId} className="-bottom-5.5 absolute text-destructive text-sm" data-testid="task-title-error" role="alert">
+        <span
+          id={fields.title.errorId}
+          className="-bottom-5.5 absolute text-destructive text-sm"
+          data-testid="task-title-error"
+          role="alert"
+        >
           {fields.title.errors}
         </span>
       </div>

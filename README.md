@@ -124,7 +124,12 @@ bunx --bun shadcn@latest add button
 
 ```
 /skelton-task-app-main
-  ├ public : 画像などアセット類
+  ├ migrations : Drizzle ORMによって生成されるデータベースマイグレーションファイル群
+  |    ├ meta: マイグレーションメタデータフォルダ
+  |    |   ├ _journal.json : マイグレーション履歴を追跡するジャーナルファイル
+  |    |   └ XXXX_snapshot.json : データベーススキーマのスナップショットファイル
+  |    └  XXXX_xxxx_xxxx.sql: 実際のSQLマイグレーション実行ファイル
+  ├ public : 画像・アイコン・ファビコンなどの静的アセット類
   ├ src
   |  ├ app: ルーティング定義
   |  |  ├ api: Route Handler
@@ -157,13 +162,21 @@ bunx --bun shadcn@latest add button
   |  |  ├ tasks: 機能に関連するディレクトリをまとめる親ディレクトリ（機能に関連した命名を行う）
   |  |  |   ├ actions : server actionsを格納（server actionsは原則1ファイル（モジュール）1関数としてください）
   |  |  |   |  └ *.ts : 任意のserver actions
-  |  |  |   ├ api : API関連の処理を格納
-  |  |  |   |  └ route.ts : APIの実装を行うファイル
-  |  |  |   ├ components : 当該機能で使用するコンポーネントをまとめるディレクトリ
-  |  |  |   |  ├ user-list.ts : ユーザー一覧をfetch・表示するコンポーネント
+  |  |  |   ├ api : 当該機能のAPIルート定義とハンドラー定義
+  |  |  |   |  ├ handler.ts : APIエンドポイントのリクエスト/レスポンス処理を実装するハンドラー関数
+  |  |  |   |  └ route.ts : HonoのOpenAPI仕様に基づくルート定義
+  |  |  |   ├ components : 当該機能で使用するコンポーネントをまとめるディレクトリ（UI層）
+  |  |  |   |  ├ task-list.ts : ユーザー一覧をfetch・表示するコンポーネント
   |  |  |   |  └ *.ts : 任意のコンポーネント
-  |  |  |   ├ hooks : 当該機能で使用するhooksをまとめるディレクトリ
+  |  |  |   ├ constants : 当該機能で使用する定数をまとめるディレクトリ
+  |  |  |   |  ├ task.ts : Taskに関連する定数
+  |  |  |   |  └ *.ts : 任意の定数
+  |  |  |   ├ hooks : 当該機能で使用するhooksをまとめるディレクトリ（ロジック層の分離）
   |  |  |   |  └ *-hook.ts: 任意のhooks
+  |  |  |   ├ server : 当該機能のServer Component側で利用するfetchやqueryをまとめるディレクトリ
+  |  |  |   |  └ fetcher.ts: Server Componentで利用するfetcher
+  |  |  |   ├ services : 当該機能のAPIやServer ActionsのCRUDのビジネスロジックをまとめるディレクトリ（ドメイン層）
+  |  |  |   |  └ task-service.ts: Taskに関するビジネスルールとデータ操作を実装するサービスクラス
   |  |  |   ├ types : 当該機能で使用する型定義をまとめるディレクトリ
   |  |  |   |  ├ schema : zod schemaをまとめるディレクトリ
   |  |  |   |  |  └ *-schema.ts : 任意のzod schema
@@ -204,16 +217,20 @@ bunx --bun shadcn@latest add button
   |  └ e2e: E2E テストコード
   |     └  tasks: utilityのUnit テストコード
   |          └ *-spec.ts: テストコード
-  ├ .env.* : 環境変数定義ファイル
-  ├ .env.test : テスト用の環境変数定義ファイル
-  ├ biome.jsonc : Linter・Formatterの設定ファイル
-  ├ components.json : shadcn/uiの設定ファイル
-  ├ next.config.ts : next.jsの設定ファイル
-  ├ package.json : パッケージマネージャーの設定ファイル
-  ├ playwright.config.ts : Playwrightの設定ファイル
-  ├ vitest.config.ts : Vitestの設定ファイル
-  ├ postcss.config.mjs : postcssの設定ファイル（主にtailwind cssのプラグイン設定を記述）
-  └ tsconfig.json : typescriptの設定ファイル
+  ├ .env.* : 環境変数定義ファイル群（開発・本番・テスト等の環境別設定）
+  ├ .env.test : テスト実行時専用の環境変数設定ファイル
+  ├ .gitignore : Git バージョン管理から除外するファイル・ディレクトリの指定
+  ├ biome.jsonc : Biomeの設定ファイル
+  ├ bun.lock : Bunパッケージマネージャーの依存関係 lockファイル
+  ├ components.json : shadcn/ui コンポーネントライブラリの設定
+  ├ drizzle.config.ts : Drizzle ORM の設定
+  ├ next.config.ts : Next.js の設定
+  ├ package.json : プロジェクト依存関係・スクリプト・メタデータ定義
+  ├ playwright.config.ts : Playwright の設定
+  ├ postcss.config.mjs : PostCSS プロセッサーとTailwind CSS プラグインの設定
+  ├ README.md : プロジェクト概要・セットアップ手順・アーキテクチャドキュメントなど
+  ├ tsconfig.json : TypeScript の設定
+  └ vitest.config.ts : Vitest の設定
 ```
 
 ## 主要ライブラリ

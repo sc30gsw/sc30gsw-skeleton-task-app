@@ -6,7 +6,6 @@ import { beforeEach, describe, expect, it, type Mock, vi } from 'vitest'
 import { TASK_STATUS } from '~/features/tasks/constants/task'
 import { useUpdateTaskStatus } from '~/features/tasks/hooks/use-update-task-status'
 
-// Mock environment variables
 vi.mock('~/env', () => ({
   env: {
     NEXT_PUBLIC_APP_BASE_URL: 'http://localhost:3000',
