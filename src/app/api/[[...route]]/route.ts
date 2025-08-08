@@ -1,12 +1,26 @@
-import { Hono } from 'hono'
+import { swaggerUI } from '@hono/swagger-ui'
+import { OpenAPIHono } from '@hono/zod-openapi'
 import { handle } from 'hono/vercel'
+import { taskApi } from '~/features/tasks/api/route'
 
-export const runtime = 'edge'
+const app = new OpenAPIHono()
 
-const app = new Hono().basePath('/api')
-const route = app
+app
+  .doc('/api/specification', {
+    openapi: '3.0.0',
+    info: {
+      title: 'API',
+      version: '1.0.0',
+    },
+  })
+  .get(
+    '/api/doc',
+    swaggerUI({
+      url: '/api/specification',
+    }),
+  )
 
+const route = app.route('/api/tasks', taskApi)
 export type AppType = typeof route
 
-export const GET = handle(app)
-export const POST = handle(app)
+export const GET = handle(route)
