@@ -1,6 +1,7 @@
 import { fireEvent, render, screen } from '@testing-library/react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { TaskItem } from '~/features/tasks/components/task-item'
+import { TASK_STATUS } from '~/features/tasks/constants/task'
 import type { TaskList } from '~/features/tasks/types/task'
 
 vi.mock('~/features/tasks/hooks/use-update-task-status', () => ({
@@ -9,7 +10,9 @@ vi.mock('~/features/tasks/hooks/use-update-task-status', () => ({
 
 vi.mock('~/features/tasks/components/status-badge', () => ({
   default: ({ isCompleted }: { isCompleted: boolean }) => (
-    <div data-testid="status-badge">{isCompleted ? 'completed' : 'pending'}</div>
+    <div data-testid="status-badge">
+      {isCompleted ? TASK_STATUS.COMPLETE : TASK_STATUS.INCOMPLETE}
+    </div>
   ),
 }))
 
@@ -154,7 +157,7 @@ describe('TaskItem', () => {
     render(<TaskItem task={mockTask} />)
 
     const statusBadge = screen.getByTestId('status-badge')
-    expect(statusBadge).toHaveTextContent('pending')
+    expect(statusBadge).toHaveTextContent(TASK_STATUS.INCOMPLETE)
   })
 
   it('TaskDeleteButtonに正しいプロップスが渡される', () => {
@@ -183,7 +186,6 @@ describe('TaskItem', () => {
 
   it('正しいフォーマットで作成日がレンダリングされる', () => {
     render(<TaskItem task={mockTask} />)
-
 
     expect(screen.getByText('2024/01/01 10:00')).toBeInTheDocument()
   })
