@@ -11,10 +11,12 @@ export type NextLayoutProps<Params = undefined, Keys extends string | undefined 
 
 export type NextPageProps<
   Params extends NonEmptyObject | undefined,
-  SearchParams extends Record<string, any> | undefined = undefined,
+  SearchParams extends Record<string, string | string[] | undefined> | undefined = undefined,
 > = {
   params: Params extends NonEmptyObject ? Promise<Params> : never
-  searchParams: SearchParams extends Record<string, any> ? Promise<SearchParams> : never
+  searchParams: SearchParams extends Record<string, string | string[] | undefined>
+    ? Promise<SearchParams>
+    : never
 }
 
 export type NextErrorProps = {
