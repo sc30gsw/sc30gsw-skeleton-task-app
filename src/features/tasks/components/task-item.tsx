@@ -30,6 +30,7 @@ export function TaskItem({ task }: Record<'task', TaskList[number]>) {
               disabled={isPending}
               aria-label={`${task.title}を${isCompleted ? '未完了' : '完了'}にする`}
               className="cursor-pointer"
+              data-testid={`task-checkbox-${task.id}`}
             />
             <Label
               htmlFor={`task-${task.id}`}
@@ -37,6 +38,7 @@ export function TaskItem({ task }: Record<'task', TaskList[number]>) {
                 'cursor-pointer font-medium text-base',
                 isCompleted ? 'text-muted-foreground line-through' : 'text-foreground',
               )}
+              data-testid={`task-title-${task.id}`}
             >
               {task.title}
             </Label>

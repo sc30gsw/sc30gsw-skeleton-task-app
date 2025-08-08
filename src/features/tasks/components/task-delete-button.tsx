@@ -20,6 +20,7 @@ export function TaskDeleteButton({ taskId, isDisabled }: TaskDeleteButtonProps) 
       onClick={handleDelete}
       className="cursor-pointer text-muted-foreground hover:text-destructive disabled:cursor-not-allowed"
       aria-label="タスクを削除"
+      data-testid={`task-delete-button-${taskId}`}
     >
       <Trash2 className="size-4" />
     </Button>

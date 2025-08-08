@@ -11,7 +11,7 @@ export function TaskCreateForm() {
   const { form, action, isPending, fields } = useCreateTask()
 
   return (
-    <form {...getFormProps(form)} action={action} className="space-y-4">
+    <form {...getFormProps(form)} action={action} className="space-y-4" data-testid="task-create-form">
       <div className="space-y-2">
         <Label htmlFor="title" className="cursor-text font-medium text-foreground text-sm">
           タスクタイトル
@@ -22,15 +22,19 @@ export function TaskCreateForm() {
           id="title"
           placeholder="タスクを入力してください"
           disabled={isPending}
+          data-testid="task-title-input"
+          aria-label="タスクタイトル入力欄"
         />
 
-        <span id={fields.title.errorId} className="-bottom-5.5 absolute text-destructive text-sm">
+        <span id={fields.title.errorId} className="-bottom-5.5 absolute text-destructive text-sm" data-testid="task-title-error" role="alert">
           {fields.title.errors}
         </span>
       </div>
       <Button
         className="relative w-full cursor-pointer disabled:cursor-not-allowed"
         disabled={isPending}
+        data-testid="task-submit-button"
+        aria-label="タスクを追加"
       >
         タスクを追加
         {isPending ? (

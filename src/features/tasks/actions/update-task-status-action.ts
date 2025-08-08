@@ -1,7 +1,7 @@
 'use server'
 
 import type { Task } from '~/db/schema'
-import { TASK_ERROR_MESSAGES } from '~/features/tasks/constants/validation'
+import { TASK_ERROR_MESSAGES, TASK_SUCCESS_MESSAGES } from '~/features/tasks/constants/validation'
 import { TaskService } from '~/features/tasks/services/task-service'
 import { updateTaskSchema } from '~/features/tasks/types/schema/task-schema'
 import type { ActionsResult } from '~/types/action-result'
@@ -26,7 +26,7 @@ export async function updateTaskStatusAction(
 
     return {
       isSuccess: true,
-      message: TASK_ERROR_MESSAGES.TASK_UPDATE_FAILED.message,
+      message: TASK_SUCCESS_MESSAGES.TASK_UPDATED.message,
     }
   } catch (_) {
     return {
