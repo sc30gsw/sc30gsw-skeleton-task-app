@@ -157,13 +157,21 @@ bunx --bun shadcn@latest add button
   |  |  ├ tasks: 機能に関連するディレクトリをまとめる親ディレクトリ（機能に関連した命名を行う）
   |  |  |   ├ actions : server actionsを格納（server actionsは原則1ファイル（モジュール）1関数としてください）
   |  |  |   |  └ *.ts : 任意のserver actions
-  |  |  |   ├ api : API関連の処理を格納
-  |  |  |   |  └ route.ts : APIの実装を行うファイル
-  |  |  |   ├ components : 当該機能で使用するコンポーネントをまとめるディレクトリ
-  |  |  |   |  ├ user-list.ts : ユーザー一覧をfetch・表示するコンポーネント
+  |  |  |   ├ api : 当該機能のAPIルート定義とハンドラー定義
+  |  |  |   |  ├ handler.ts : APIエンドポイントのリクエスト/レスポンス処理を実装するハンドラー関数
+  |  |  |   |  └ route.ts : HonoのOpenAPI仕様に基づくルート定義
+  |  |  |   ├ components : 当該機能で使用するコンポーネントをまとめるディレクトリ（UI層）
+  |  |  |   |  ├ task-list.ts : ユーザー一覧をfetch・表示するコンポーネント
   |  |  |   |  └ *.ts : 任意のコンポーネント
-  |  |  |   ├ hooks : 当該機能で使用するhooksをまとめるディレクトリ
+  |  |  |   ├ constants : 当該機能で使用する定数をまとめるディレクトリ
+  |  |  |   |  ├ task.ts : Taskに関連する定数
+  |  |  |   |  └ *.ts : 任意の定数
+  |  |  |   ├ hooks : 当該機能で使用するhooksをまとめるディレクトリ（ロジック層の分離）
   |  |  |   |  └ *-hook.ts: 任意のhooks
+  |  |  |   ├ server : 当該機能のServer Component側で利用するfetchやqueryをまとめるディレクトリ
+  |  |  |   |  └ fetcher.ts: Server Componentで利用するfetcher
+  |  |  |   ├ services : 当該機能のAPIやServer ActionsのCRUDのビジネスロジックをまとめるディレクトリ（ドメイン層）
+  |  |  |   |  └ task-service.ts: Taskに関するビジネスルールとデータ操作を実装するサービスクラス
   |  |  |   ├ types : 当該機能で使用する型定義をまとめるディレクトリ
   |  |  |   |  ├ schema : zod schemaをまとめるディレクトリ
   |  |  |   |  |  └ *-schema.ts : 任意のzod schema
