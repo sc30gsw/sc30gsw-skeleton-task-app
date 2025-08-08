@@ -11,7 +11,9 @@ export default function Home() {
   return (
     <div className="container mx-auto max-w-4xl px-4 py-8" data-testid="task-manager-container">
       <header className="mb-8" data-testid="header">
-        <h1 className="mb-2 font-bold text-3xl text-foreground" data-testid="main-title">タスク管理</h1>
+        <h1 className="mb-2 font-bold text-3xl text-foreground" data-testid="main-title">
+          タスク管理
+        </h1>
         <p className="text-muted-foreground" data-testid="main-description">
           やるべきことを整理して、効率的に作業を進めましょう。
         </p>
@@ -21,7 +23,9 @@ export default function Home() {
         <div className="space-y-6">
           <Card className="w-full" data-testid="task-create-card">
             <CardHeader>
-              <CardTitle className="text-lg" data-testid="task-create-title">新しいタスクを作成</CardTitle>
+              <CardTitle className="text-lg" data-testid="task-create-title">
+                新しいタスクを作成
+              </CardTitle>
             </CardHeader>
             <CardContent>
               <TaskCreateForm />
