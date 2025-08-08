@@ -1,0 +1,151 @@
+{
+	"$schema": "https://biomejs.dev/schemas/2.1.4/schema.json",
+	"vcs": {
+		"enabled": false,
+		"clientKind": "git",
+		"useIgnoreFile": false
+	},
+	"files": {
+		"includes": [
+			"src/**/*.tsx",
+			"src/**/*.ts",
+			"tests/**/*.ts",
+			"tests/**/*.tsx"
+		],
+		"ignoreUnknown": false
+	},
+	"formatter": {
+		"enabled": true,
+		"indentStyle": "space",
+		"indentWidth": 2,
+		"lineWidth": 100
+	},
+	"linter": {
+		"enabled": true,
+		"rules": {
+			"recommended": true,
+			"performance": {
+				"noImgElement": "off"
+			},
+			"style": {
+				"noNonNullAssertion": "off",
+				"noParameterAssign": "warn",
+				"useImportType": "warn"
+			},
+			"complexity": {
+				"useArrowFunction": "error",
+				"noForEach": "off"
+			},
+			"a11y": {
+				"noRedundantRoles": "off",
+				"noSvgWithoutTitle": "off",
+				"useValidAnchor": "off",
+				"useSemanticElements": "off"
+			},
+			"correctness": {
+				"noUnusedImports": { "level": "error", "fix": "safe", "options": {} },
+				"useExhaustiveDependencies": "off",
+				"useHookAtTopLevel": "error",
+				"noChildrenProp": "off"
+			},
+			"suspicious": {
+				"noDocumentCookie": "off",
+				"noExplicitAny": "off",
+				"noArrayIndexKey": "off"
+			},
+			"security": {
+				"noDangerouslySetInnerHtml": "off"
+			},
+			"nursery": {
+				"useSortedClasses": {
+					"level": "error",
+					"fix": "safe",
+					"options": {
+						"attributes": ["classList"],
+						"functions": [
+							"twMerge",
+							"twJoin",
+							"tv",
+							"composeRenderProps",
+							"composeTailwindRenderProps"
+						]
+					}
+				}
+			}
+		}
+	},
+	"javascript": {
+		"formatter": {
+			"quoteStyle": "single",
+			"semicolons": "asNeeded",
+			"arrowParentheses": "always",
+			"bracketSameLine": false,
+			"bracketSpacing": true,
+			"jsxQuoteStyle": "double",
+			"quoteProperties": "asNeeded",
+			"trailingCommas": "all"
+		}
+	},
+	"assist": {
+		"enabled": true,
+		"actions": {
+			"source": {
+				"organizeImports": "on"
+			}
+		}
+	},
+	"overrides": [
+		{
+			"includes": [
+				"next.config.ts",
+				"postcss.config.mjs",
+				"layout.tsx",
+				"page.tsx",
+				"loading.tsx",
+				"error.tsx",
+				"not-found.tsx",
+				"unauthorized.tsx",
+				"middleware.ts",
+				"default.tsx",
+				"api/route.ts",
+				"env.ts",
+				"playwright.config.ts"
+			],
+			"linter": {
+				"rules": {
+					"style": {
+						"noDefaultExport": "off",
+						"useNamingConvention": "off"
+					}
+				}
+			}
+		},
+		{
+			"includes": ["actions/*.ts"],
+			"linter": {
+				"rules": {
+					"suspicious": {
+						"useAwait": "off"
+					}
+				}
+			}
+		},
+		{
+			"includes": ["src/types/charts/*.ts"],
+			"linter": { "rules": { "suspicious": { "noExplicitAny": "off" } } }
+		},
+		{
+			"includes": ["tests/**/*.spec.ts", "tests/**/*.test.ts"],
+			"linter": {
+				"rules": {
+					"style": {
+						"useNamingConvention": "off"
+					},
+					"complexity": {
+						"useArrowFunction": "off"
+					}
+				}
+			}
+		}
+	]
+}
