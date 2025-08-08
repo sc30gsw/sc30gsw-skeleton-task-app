@@ -4,6 +4,7 @@ import { TaskCreateForm } from '~/features/tasks/components/task-create-form'
 import { TaskList } from '~/features/tasks/components/task-list'
 import { TaskSkeleton } from '~/features/tasks/components/task-skeleton'
 
+// ? ServerComponent側でHono RPC呼び出しがキャッシュされbuildが失敗するため追加
 export const dynamic = 'force-dynamic'
 
 export default function Home() {
