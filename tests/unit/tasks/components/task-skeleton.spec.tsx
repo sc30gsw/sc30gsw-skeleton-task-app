@@ -6,7 +6,12 @@ describe('TaskSkeleton', () => {
   it('タスク一覧のスケルトン構造がレンダリングされる', () => {
     render(<TaskSkeleton />)
 
-    expect(screen.getByText('タスク一覧 0')).toBeInTheDocument()
+    // ヘッダー内の「タスク一覧」テキストを部分的にマッチング
+    const header = screen.getByRole('heading', { level: 2 })
+    expect(header).toHaveTextContent(/タスク一覧/)
+
+    // ヘッダー内にスケルトンが含まれていることを確認
+    expect(header.querySelector('[data-slot="skeleton"]')).toBeInTheDocument()
   })
 
   it('正しい数のスケルトンアイテムがレンダリングされる', () => {
@@ -26,8 +31,8 @@ describe('TaskSkeleton', () => {
   it('正しいスタイリングでヘッダーがレンダリングされる', () => {
     render(<TaskSkeleton />)
 
-    const header = screen.getByText('タスク一覧 0')
-    expect(header.tagName.toLowerCase()).toBe('h2')
+    const header = screen.getByRole('heading', { level: 2 })
     expect(header).toHaveClass('font-semibold', 'text-lg')
+    expect(header).toHaveTextContent(/タスク一覧/)
   })
 })
