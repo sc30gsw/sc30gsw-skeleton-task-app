@@ -21,6 +21,11 @@ test.describe('タスク管理アプリケーション', () => {
       await expect(page.getByTestId('main-description')).toContainText(
         'やるべきことを整理して、効率的に作業を進めましょう。',
       )
+
+      // 初期ページ表示のスクリーンショット
+      await page.screenshot({
+        path: 'tests/e2e/tasks/screenshots/main-page-initial-display.png',
+      })
     })
 
     test('タスク作成フォームが表示される', async ({ page }) => {
@@ -30,6 +35,11 @@ test.describe('タスク管理アプリケーション', () => {
       await expect(page.getByTestId('task-create-form')).toBeVisible()
       await expect(page.getByTestId('task-title-input')).toBeVisible()
       await expect(page.getByTestId('task-submit-button')).toBeVisible()
+
+      // タスク作成フォーム表示のスクリーンショット
+      await page.screenshot({
+        path: 'tests/e2e/tasks/screenshots/task-create-form-display.png',
+      })
     })
 
     test('タスクリストセクションが表示される', async ({ page }) => {
@@ -53,6 +63,11 @@ test.describe('タスク管理アプリケーション', () => {
 
       // タスクがリストに表示されることを確認
       await expect(page.getByText(taskTitle)).toBeVisible()
+
+      // タスク作成成功後のスクリーンショット
+      await page.screenshot({
+        path: 'tests/e2e/tasks/screenshots/task-creation-success.png',
+      })
     })
 
     test('空のタスクタイトルでエラーが表示される', async ({ page }) => {
@@ -61,6 +76,11 @@ test.describe('タスク管理アプリケーション', () => {
 
       // バリデーションエラーをチェック
       await expect(page.getByTestId('task-title-error')).toBeVisible()
+
+      // バリデーションエラー表示のスクリーンショット
+      await page.screenshot({
+        path: 'tests/e2e/tasks/screenshots/validation-error-display.png',
+      })
     })
 
     test('タスク作成中にローディング状態が表示される', async ({ page }) => {
@@ -72,6 +92,11 @@ test.describe('タスク管理アプリケーション', () => {
 
       // ボタンがローディング状態（無効化）であることを確認
       await expect(page.getByTestId('task-submit-button')).toBeDisabled()
+
+      // ローディング状態のスクリーンショット
+      await page.screenshot({
+        path: 'tests/e2e/tasks/screenshots/loading-state-display.png',
+      })
 
       await submitPromise
     })
@@ -97,11 +122,21 @@ test.describe('タスク管理アプリケーション', () => {
       // タスクが完了としてマークされていることを確認
       await expect(taskCheckbox).toBeChecked()
 
+      // 完了状態のスクリーンショット
+      await page.screenshot({
+        path: 'tests/e2e/tasks/screenshots/task-completed-state.png',
+      })
+
       // タスクのチェックを外す
       await taskCheckbox.click()
 
       // タスクのマークが外されていることを確認
       await expect(taskCheckbox).not.toBeChecked()
+
+      // 未完了状態のスクリーンショット
+      await page.screenshot({
+        path: 'tests/e2e/tasks/screenshots/task-uncompleted-state.png',
+      })
     })
 
     test('タスクを削除できる', async ({ page }) => {
@@ -112,6 +147,11 @@ test.describe('タスク管理アプリケーション', () => {
       // 削除前にタスクタイトルを取得
       const taskTitle = page.locator('[data-testid^="task-title-"]').first()
       const titleText = await taskTitle.textContent()
+
+      // 削除前のタスク表示状態のスクリーンショット
+      await page.screenshot({
+        path: 'tests/e2e/tasks/screenshots/task-before-deletion.png',
+      })
 
       // 確認ダイアログハンドラーを設定
       page.on('dialog', async (dialog) => {
@@ -129,6 +169,11 @@ test.describe('タスク管理アプリケーション', () => {
       if (titleText) {
         await expect(page.getByText(titleText)).not.toBeVisible()
       }
+
+      // 削除後の状態のスクリーンショット
+      await page.screenshot({
+        path: 'tests/e2e/tasks/screenshots/task-after-deletion.png',
+      })
     })
   })
 })
