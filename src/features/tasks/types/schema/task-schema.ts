@@ -12,6 +12,7 @@ export const createTaskSchema = z.object({
           : TITLE_VALIDATION.NOT_STRING.message,
     })
     .trim()
+    .min(TITLE_VALIDATION.MIN_LENGTH.value, TITLE_VALIDATION.MIN_LENGTH.message)
     .max(TITLE_VALIDATION.MAX_LENGTH.value, TITLE_VALIDATION.MAX_LENGTH.message),
 })
 
