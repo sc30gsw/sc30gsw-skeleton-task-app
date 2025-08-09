@@ -182,32 +182,36 @@ test.describe('タスク管理アプリケーション', () => {
     test('空文字でエラーが表示される', async ({ page }) => {
       // 空のフォームを送信
       await page.getByTestId('task-submit-button').click()
-      
+
       // エラーメッセージの確認
       await expect(page.getByTestId('task-title-error')).toBeVisible()
-      await expect(page.getByTestId('task-title-error')).toHaveText('タスクタイトルは1文字以上で入力してください')
+      await expect(page.getByTestId('task-title-error')).toHaveText(
+        'タスクタイトルは1文字以上で入力してください',
+      )
     })
 
     test('スペース・改行・タブのみでエラーが表示される', async ({ page }) => {
       // スペースのみを入力
       await page.getByTestId('task-title-input').fill('   ')
       await page.getByTestId('task-submit-button').click()
-      
+
       // エラーが表示されることを確認
       await expect(page.getByTestId('task-title-error')).toBeVisible()
-      await expect(page.getByTestId('task-title-error')).toHaveText('タスクタイトルは1文字以上で入力してください')
-      
+      await expect(page.getByTestId('task-title-error')).toHaveText(
+        'タスクタイトルは1文字以上で入力してください',
+      )
+
       // 改行のみを入力
       await page.getByTestId('task-title-input').fill('\n\n')
       await page.getByTestId('task-submit-button').click()
-      
+
       // エラーが表示されることを確認
       await expect(page.getByTestId('task-title-error')).toBeVisible()
-      
+
       // タブのみを入力
       await page.getByTestId('task-title-input').fill('\t\t')
       await page.getByTestId('task-submit-button').click()
-      
+
       // エラーが表示されることを確認
       await expect(page.getByTestId('task-title-error')).toBeVisible()
     })
@@ -215,17 +219,17 @@ test.describe('タスク管理アプリケーション', () => {
     test('特殊文字を含む有効入力でタスクが作成される', async ({ page }) => {
       const timestamp = Date.now()
       const specialTitle = `タスク!@#$%^&*()🚀-${timestamp}`
-      
+
       // 特殊文字を含む文字列を入力
       await page.getByTestId('task-title-input').fill(specialTitle)
       await page.getByTestId('task-submit-button').click()
-      
+
       // ページが更新されるまで待機
       await page.waitForLoadState('networkidle')
-      
+
       // エラーが表示されないことを確認
       await expect(page.getByTestId('task-title-error')).not.toBeVisible()
-      
+
       // タスクが正常に作成されることを確認
       await expect(page.getByText(specialTitle)).toBeVisible({ timeout: 10000 })
     })
@@ -233,44 +237,50 @@ test.describe('タスク管理アプリケーション', () => {
     test('境界値テスト（255文字・256文字）', async ({ page }) => {
       // 255文字（有効）- ユニークIDを追加
       const timestamp = Date.now().toString()
-      const validTitle = 'a'.repeat(255 - timestamp.length - 1) + '-' + timestamp // 正確に255文字
+      // 正確に255文字になるように計算: prefix + timestamp + 'a'の繰り返し = 255
+      const prefix = 'valid-'
+      const remainingChars = 255 - prefix.length - timestamp.length
+      const validTitle = `${prefix}${timestamp}${'a'.repeat(remainingChars)}`
+
       await page.getByTestId('task-title-input').fill(validTitle)
       await page.getByTestId('task-submit-button').click()
-      
+
       // ページが更新されるまで待機
       await page.waitForLoadState('networkidle')
-      
+
       // エラーが表示されないことを確認
       await expect(page.getByTestId('task-title-error')).not.toBeVisible()
-      
+
       // タスクが作成されることを確認
       await expect(page.getByText(validTitle)).toBeVisible({ timeout: 10000 })
-      
-      // 256文字（無効）- ユニークIDを追加
+
+      // 256文字（無効）- 確実に256文字にする
       const invalidTitle = 'b'.repeat(256)
       await page.getByTestId('task-title-input').fill(invalidTitle)
       await page.getByTestId('task-submit-button').click()
-      
+
       // エラーメッセージの確認
       await expect(page.getByTestId('task-title-error')).toBeVisible()
-      await expect(page.getByTestId('task-title-error')).toHaveText('タスクタイトルは255文字以内で入力してください')
+      await expect(page.getByTestId('task-title-error')).toHaveText(
+        'タスクタイトルは255文字以内で入力してください',
+      )
     })
 
     test('トリム機能のテスト', async ({ page }) => {
       const timestamp = Date.now()
       const titleWithSpaces = `  有効なタスクタイトル-${timestamp}  `
       const trimmedTitle = `有効なタスクタイトル-${timestamp}`
-      
+
       // 前後にスペースを含む文字列を入力
       await page.getByTestId('task-title-input').fill(titleWithSpaces)
       await page.getByTestId('task-submit-button').click()
-      
+
       // ページが更新されるまで待機
       await page.waitForLoadState('networkidle')
-      
+
       // エラーが表示されないことを確認
       await expect(page.getByTestId('task-title-error')).not.toBeVisible()
-      
+
       // トリムされた文字列でタスクが作成されることを確認
       await expect(page.getByText(trimmedTitle)).toBeVisible({ timeout: 10000 })
     })
