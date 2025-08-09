@@ -45,15 +45,22 @@
 ### 1. envファイルの作成
 ```bash
 # you can pick out any env file's name you like.
-touch .env
+touch .env .env.test
 ```
 
 ### 2. envファイルに以下の内容を記述
+#### 2.1 開発環境
 ```ts: .env
 NEXT_PUBLIC_APP_BASE_URL = http://localhost:3000
 
 DATABASE_URL = <database-url>
 DATABASE_AUTH_TOKEN = <database-auth-token>
+```
+
+#### 2.2 テスト環境
+```ts: .env.test
+NEXT_PUBLIC_APP_BASE_URL=http://localhost:3000
+DATABASE_URL=file:./test.db
 ```
 
 ### 3. 依存関係のインストール
@@ -69,6 +76,71 @@ bun dev
 ### 5. テストについて
 - Vitestを用いて各種Unitテストを実装する
 - Playwrightを用いてE2Eテストを実施する
+
+### 6. テストデータベース設定
+
+#### テストデータベースの概要
+E2Eテスト実行時には、本番・開発環境から完全に分離されたローカルSQLiteデータベースを使用します。
+
+#### データベース選択の理由
+**ローカルSQLiteを選択した理由（Tursoレプリケーション機能ではなく）**：
+- **コスト効率**: 完全無料（追加料金なし）
+- **高速実行**: ネットワーク通信なしのローカルファイルアクセス
+- **完全分離**: 本番・開発データへの影響ゼロ
+- **シンプル**: 設定・管理が簡単
+- **CI/CD対応**: 環境構築が容易
+
+#### 現在の設定
+- **テスト用DB**: `DATABASE_URL=file:./test.db`
+- **環境変数ファイル**: `.env.test`
+- **自動初期化**: テスト実行前に自動DB作成・マイグレーション実行
+- **自動クリーンアップ**: 毎回新しいDBでテスト実行
+
+#### テスト実行方法
+```bash
+# E2Eテスト実行（DB自動初期化付き）
+bun test:e2e
+
+# テスト用DB初期化のみ実行
+bun test:e2e:setup
+```
+
+#### 仕組みの詳細
+1. **自動DB初期化**: `scripts/setup-test-db.ts`が実行前にtest.dbを初期化
+2. **環境変数切り替え**: Playwright設定により自動的に`.env.test`を読み込み
+3. **完全分離**: 本番・開発環境のデータベースに一切影響なし
+4. **高速テスト**: ローカルファイル使用により高速テスト実行
+
+## API ドキュメント
+
+本アプリケーションでは、[Scalar](https://scalar.com/)を使用してAPIドキュメントを提供しています。ScalarはOpenAPI仕様に基づいた美しく使いやすいAPIリファレンスを自動生成するツールです。
+
+### Scalar APIドキュメントのアクセス方法
+
+開発サーバー起動後、以下のURLでAPIドキュメントにアクセスできます：
+
+- **Scalar UI**: `http://localhost:3000/api/scalar`
+  - インタラクティブなAPIドキュメントUI
+  - リクエスト/レスポンスの詳細確認
+  - ブラウザ上でのAPI試行機能
+
+- **OpenAPI仕様**: `http://localhost:3000/api/doc`
+  - 生のOpenAPI 3.0仕様（JSON形式）
+  - API定義の詳細確認
+  - 他のツールでのインポート用
+
+### 利用方法
+
+1. **APIエンドポイントの確認**: 各APIの詳細な仕様、パラメータ、レスポンス形式を確認
+2. **テストリクエスト送信**: ブラウザ上で直接APIリクエストを試行
+3. **コード例の参照**: 各言語でのリクエスト例を確認
+4. **認証情報の設定**: 必要に応じて認証情報を設定してテスト実行
+
+### 特徴
+
+- **リアルタイム同期**: コードの変更が自動的にドキュメントに反映
+- **型安全性**: Zodスキーマによる厳密な型定義とバリデーション
+- **開発効率**: フロントエンドとバックエンドの連携確認が容易
 
 ## コーディング規約
 ### はじめに
@@ -125,11 +197,13 @@ bunx --bun shadcn@latest add button
 ```
 /skelton-task-app-main
   ├ migrations : Drizzle ORMによって生成されるデータベースマイグレーションファイル群
-  |    ├ meta: マイグレーションメタデータフォルダ
-  |    |   ├ _journal.json : マイグレーション履歴を追跡するジャーナルファイル
-  |    |   └ XXXX_snapshot.json : データベーススキーマのスナップショットファイル
-  |    └  XXXX_xxxx_xxxx.sql: 実際のSQLマイグレーション実行ファイル
+  |  ├ meta: マイグレーションメタデータフォルダ
+  |  |   ├ _journal.json : マイグレーション履歴を追跡するジャーナルファイル
+  |  |   └ XXXX_snapshot.json : データベーススキーマのスナップショットファイル
+  |  └  XXXX_xxxx_xxxx.sql: 実際のSQLマイグレーション実行ファイル
   ├ public : 画像・アイコン・ファビコンなどの静的アセット類
+  ├ script : プロジェクトで使用するスクリプトファイル
+  |  └  setup-test-db.ts: テスト用DB構築スクリプト
   ├ src
   |  ├ app: ルーティング定義
   |  |  ├ api: Route Handler
@@ -213,9 +287,10 @@ bunx --bun shadcn@latest add button
   |  |  |   ├ components: componentのUnit テストコード
   |  |  |   |  └ *-spec.ts: テストコード
   |  |  |   └ hooks: hooksのUnit テストコード
-  |  |  | 　  └ *-spec.ts: テストコード
+  |  |  |     └ *-spec.ts: テストコード
   |  └ e2e: E2E テストコード
   |     └  tasks: utilityのUnit テストコード
+  |          ├ screenshots: E2Eテスト実行時スクリーンショット
   |          └ *-spec.ts: テストコード
   ├ .env.* : 環境変数定義ファイル群（開発・本番・テスト等の環境別設定）
   ├ .env.test : テスト実行時専用の環境変数設定ファイル
@@ -229,6 +304,7 @@ bunx --bun shadcn@latest add button
   ├ playwright.config.ts : Playwright の設定
   ├ postcss.config.mjs : PostCSS プロセッサーとTailwind CSS プラグインの設定
   ├ README.md : プロジェクト概要・セットアップ手順・アーキテクチャドキュメントなど
+  ├ test.db : テスト環境用ローカルDB
   ├ tsconfig.json : TypeScript の設定
   └ vitest.config.ts : Vitest の設定
 ```
