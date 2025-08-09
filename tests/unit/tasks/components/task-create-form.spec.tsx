@@ -203,4 +203,104 @@ describe('TaskCreateForm', () => {
     const button = screen.getByRole('button', { name: 'タスクを追加' })
     expect(button).toHaveClass('disabled:cursor-not-allowed')
   })
+
+  describe('バリデーションエラー表示', () => {
+    it('必須入力エラーを表示する', async () => {
+      const { useCreateTask } = vi.mocked(await import('~/features/tasks/hooks/use-create-task'))
+      useCreateTask.mockReturnValue({
+        form: createMockFormMetadata(),
+        action: mockAction,
+        isPending: false,
+        fields: {
+          title: createMockFieldMetadata('title', ['タスクタイトルは1文字以上で入力してください']),
+        },
+      })
+
+      render(<TaskCreateForm />)
+
+      const errorElement = screen.getByTestId('task-title-error')
+      expect(errorElement).toBeInTheDocument()
+      expect(errorElement).toHaveTextContent('タスクタイトルは1文字以上で入力してください')
+      expect(errorElement).toHaveAttribute('role', 'alert')
+    })
+
+    it('最大文字数エラーを表示する', async () => {
+      const { useCreateTask } = vi.mocked(await import('~/features/tasks/hooks/use-create-task'))
+      useCreateTask.mockReturnValue({
+        form: createMockFormMetadata(),
+        action: mockAction,
+        isPending: false,
+        fields: {
+          title: createMockFieldMetadata('title', ['タスクタイトルは255文字以内で入力してください']),
+        },
+      })
+
+      render(<TaskCreateForm />)
+
+      const errorElement = screen.getByTestId('task-title-error')
+      expect(errorElement).toBeInTheDocument()
+      expect(errorElement).toHaveTextContent('タスクタイトルは255文字以内で入力してください')
+      expect(errorElement).toHaveClass('text-destructive', 'text-sm')
+    })
+
+    it('複数のエラーメッセージを表示する', async () => {
+      const { useCreateTask } = vi.mocked(await import('~/features/tasks/hooks/use-create-task'))
+      useCreateTask.mockReturnValue({
+        form: createMockFormMetadata(),
+        action: mockAction,
+        isPending: false,
+        fields: {
+          title: createMockFieldMetadata('title', [
+            'タスクタイトルは1文字以上で入力してください',
+            'タスクタイトルは文字列である必要があります'
+          ]),
+        },
+      })
+
+      render(<TaskCreateForm />)
+
+      const errorElement = screen.getByTestId('task-title-error')
+      expect(errorElement).toBeInTheDocument()
+      // Conformは最初のエラーを表示する
+      expect(errorElement).toHaveTextContent('タスクタイトルは1文字以上で入力してください')
+    })
+
+    it('エラーがない場合はエラーメッセージを表示しない', async () => {
+      const { useCreateTask } = vi.mocked(await import('~/features/tasks/hooks/use-create-task'))
+      useCreateTask.mockReturnValue({
+        form: createMockFormMetadata(),
+        action: mockAction,
+        isPending: false,
+        fields: {
+          title: createMockFieldMetadata('title', []),
+        },
+      })
+
+      render(<TaskCreateForm />)
+
+      expect(screen.queryByTestId('task-title-error')).not.toBeInTheDocument()
+    })
+
+    it('エラー要素にアクセシビリティ属性が設定される', async () => {
+      const { useCreateTask } = vi.mocked(await import('~/features/tasks/hooks/use-create-task'))
+      const errorId = 'title-error'
+      const titleField = createMockFieldMetadata('title', ['エラーメッセージ'])
+      titleField.errorId = errorId
+      
+      useCreateTask.mockReturnValue({
+        form: createMockFormMetadata(),
+        action: mockAction,
+        isPending: false,
+        fields: {
+          title: titleField,
+        },
+      })
+
+      render(<TaskCreateForm />)
+
+      const errorElement = screen.getByTestId('task-title-error')
+      expect(errorElement).toHaveAttribute('id', errorId)
+      expect(errorElement).toHaveAttribute('role', 'alert')
+    })
+  })
 })
