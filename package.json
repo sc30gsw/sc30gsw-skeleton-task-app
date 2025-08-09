@@ -11,12 +11,12 @@
     "format": "biome format --write ./src ./tests",
     "check": "biome check --write ./src ./tests",
     "test:unit": "vitest run",
-    "test:e2e": "playwright test"
+    "test:e2e": "bun scripts/setup-test-db.ts && playwright test",
+    "test:e2e:setup": "bun scripts/setup-test-db.ts"
   },
   "dependencies": {
     "@conform-to/react": "^1.8.2",
     "@conform-to/zod": "^1.8.2",
-    "@hono/swagger-ui": "^0.5.2",
     "@hono/zod-openapi": "^1.1.0",
     "@hono/zod-validator": "^0.7.2",
     "@libsql/client": "^0.15.10",
@@ -24,6 +24,7 @@
     "@radix-ui/react-dialog": "^1.1.14",
     "@radix-ui/react-label": "^2.1.7",
     "@radix-ui/react-slot": "^1.2.3",
+    "@scalar/hono-api-reference": "^0.9.13",
     "@t3-oss/env-nextjs": "^0.13.8",
     "babel-plugin-react-compiler": "^19.1.0-rc.2",
     "class-variance-authority": "^0.7.1",
