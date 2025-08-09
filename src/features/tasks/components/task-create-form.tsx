@@ -31,14 +31,16 @@ export function TaskCreateForm() {
           aria-label="タスクタイトル入力欄"
         />
 
-        <span
-          id={fields.title.errorId}
-          className="-bottom-5.5 absolute text-destructive text-sm"
-          data-testid="task-title-error"
-          role="alert"
-        >
-          {fields.title.errors}
-        </span>
+        {fields.title.errors && (
+          <span
+            id={fields.title.errorId}
+            className="text-destructive text-sm"
+            data-testid="task-title-error"
+            role="alert"
+          >
+            {fields.title.errors}
+          </span>
+        )}
       </div>
       <Button
         className="relative w-full cursor-pointer disabled:cursor-not-allowed"
