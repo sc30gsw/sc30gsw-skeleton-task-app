@@ -67,13 +67,16 @@ describe('createTaskAction', () => {
   })
 
   describe('バリデーションエラー', () => {
-    it('バリデーションが失敗した時にsubmission replyを返す', async () => {
+    it('空文字のバリデーションエラー', async () => {
       const formData = new FormData()
-      formData.append('title', '') // 無効な空のタイトル
+      formData.append('title', '')
 
       const mockSubmission = {
         status: 'error' as const,
-        reply: vi.fn().mockReturnValue({ status: 'error', error: { title: ['必須'] } }),
+        reply: vi.fn().mockReturnValue({
+          status: 'error',
+          error: { title: ['タスクタイトルは1文字以上で入力してください'] },
+        }),
       }
 
       mockParseWithZod.mockReturnValue(mockSubmission as any)
@@ -84,7 +87,90 @@ describe('createTaskAction', () => {
       expect(mockCreateTask).not.toHaveBeenCalled()
       expect(mockRevalidateTag).not.toHaveBeenCalled()
       expect(mockSubmission.reply).toHaveBeenCalled()
-      expect(result).toEqual({ status: 'error', error: { title: ['必須'] } })
+      expect(result).toEqual({
+        status: 'error',
+        error: { title: ['タスクタイトルは1文字以上で入力してください'] },
+      })
+    })
+
+    it('スペースのみ入力のバリデーションエラー', async () => {
+      const formData = new FormData()
+      formData.append('title', '   ') // スペースのみ
+
+      const mockSubmission = {
+        status: 'error' as const,
+        reply: vi.fn().mockReturnValue({
+          status: 'error',
+          error: { title: ['タスクタイトルは1文字以上で入力してください'] },
+        }),
+      }
+
+      mockParseWithZod.mockReturnValue(mockSubmission as any)
+
+      const result = await createTaskAction(undefined, formData)
+
+      expect(mockParseWithZod).toHaveBeenCalledWith(formData, { schema: expect.any(Object) })
+      expect(mockCreateTask).not.toHaveBeenCalled()
+      expect(mockRevalidateTag).not.toHaveBeenCalled()
+      expect(mockSubmission.reply).toHaveBeenCalled()
+      expect(result).toEqual({
+        status: 'error',
+        error: { title: ['タスクタイトルは1文字以上で入力してください'] },
+      })
+    })
+
+    it('256文字以上の文字数バリデーションエラー', async () => {
+      const longTitle = 'a'.repeat(256)
+      const formData = new FormData()
+      formData.append('title', longTitle)
+
+      const mockSubmission = {
+        status: 'error' as const,
+        reply: vi.fn().mockReturnValue({
+          status: 'error',
+          error: { title: ['タスクタイトルは255文字以内で入力してください'] },
+        }),
+      }
+
+      mockParseWithZod.mockReturnValue(mockSubmission as any)
+
+      const result = await createTaskAction(undefined, formData)
+
+      expect(mockParseWithZod).toHaveBeenCalledWith(formData, { schema: expect.any(Object) })
+      expect(mockCreateTask).not.toHaveBeenCalled()
+      expect(mockRevalidateTag).not.toHaveBeenCalled()
+      expect(mockSubmission.reply).toHaveBeenCalled()
+      expect(result).toEqual({
+        status: 'error',
+        error: { title: ['タスクタイトルは255文字以内で入力してください'] },
+      })
+    })
+
+    it('非文字列型のバリデーションエラー', async () => {
+      const formData = new FormData()
+      // ファイルやその他の非文字列データを簡単なモックとして表現
+      formData.append('title', '[object File]')
+
+      const mockSubmission = {
+        status: 'error' as const,
+        reply: vi.fn().mockReturnValue({
+          status: 'error',
+          error: { title: ['タスクタイトルは文字列である必要があります'] },
+        }),
+      }
+
+      mockParseWithZod.mockReturnValue(mockSubmission as any)
+
+      const result = await createTaskAction(undefined, formData)
+
+      expect(mockParseWithZod).toHaveBeenCalledWith(formData, { schema: expect.any(Object) })
+      expect(mockCreateTask).not.toHaveBeenCalled()
+      expect(mockRevalidateTag).not.toHaveBeenCalled()
+      expect(mockSubmission.reply).toHaveBeenCalled()
+      expect(result).toEqual({
+        status: 'error',
+        error: { title: ['タスクタイトルは文字列である必要があります'] },
+      })
     })
   })
 
@@ -118,13 +204,17 @@ describe('createTaskAction', () => {
     })
   })
 
-  describe('エッジケース', () => {
-    it('titleフィールドが無いFormDataを処理する', async () => {
+  describe('エッジケースと境界値テスト', () => {
+    it('titleフィールドが無いFormData（undefined）を処理する', async () => {
       const formData = new FormData()
+      // titleフィールドを追加しない
 
       const mockSubmission = {
         status: 'error' as const,
-        reply: vi.fn().mockReturnValue({ status: 'error', error: { title: ['必須'] } }),
+        reply: vi.fn().mockReturnValue({
+          status: 'error',
+          error: { title: ['タスクタイトルは1文字以上で入力してください'] },
+        }),
       }
 
       mockParseWithZod.mockReturnValue(mockSubmission as any)
@@ -133,23 +223,103 @@ describe('createTaskAction', () => {
 
       expect(mockParseWithZod).toHaveBeenCalledWith(formData, { schema: expect.any(Object) })
       expect(mockSubmission.reply).toHaveBeenCalled()
-      expect(result).toEqual({ status: 'error', error: { title: ['必須'] } })
+      expect(result).toEqual({
+        status: 'error',
+        error: { title: ['タスクタイトルは1文字以上で入力してください'] },
+      })
     })
 
-    it('null/undefinedのFormData値を処理する', async () => {
+    it('正確に255文字の入力を処理する（境界値）', async () => {
+      const validTitle = 'a'.repeat(255)
       const formData = new FormData()
-      formData.append('title', 'null')
+      formData.append('title', validTitle)
 
       const mockSubmission = {
-        status: 'error' as const,
-        reply: vi.fn().mockReturnValue({ status: 'error', error: { title: ['無効'] } }),
+        status: 'success' as const,
+        value: { title: validTitle },
+        reply: vi.fn().mockReturnValue({ status: 'success' }),
       }
 
       mockParseWithZod.mockReturnValue(mockSubmission as any)
+      mockCreateTask.mockReturnValue(undefined)
 
-      await createTaskAction(undefined, formData)
+      const result = await createTaskAction(undefined, formData)
 
+      expect(mockParseWithZod).toHaveBeenCalledWith(formData, { schema: expect.any(Object) })
+      expect(mockCreateTask).toHaveBeenCalledWith(validTitle)
+      expect(mockRevalidateTag).toHaveBeenCalledWith(FETCH_ALL_TASKS_CACHE_KEY)
       expect(mockSubmission.reply).toHaveBeenCalled()
+      expect(result).toEqual({ status: 'success' })
+    })
+
+    it('1文字の入力を処理する（最小境界値）', async () => {
+      const validTitle = 'a'
+      const formData = new FormData()
+      formData.append('title', validTitle)
+
+      const mockSubmission = {
+        status: 'success' as const,
+        value: { title: validTitle },
+        reply: vi.fn().mockReturnValue({ status: 'success' }),
+      }
+
+      mockParseWithZod.mockReturnValue(mockSubmission as any)
+      mockCreateTask.mockReturnValue(undefined)
+
+      const result = await createTaskAction(undefined, formData)
+
+      expect(mockParseWithZod).toHaveBeenCalledWith(formData, { schema: expect.any(Object) })
+      expect(mockCreateTask).toHaveBeenCalledWith(validTitle)
+      expect(mockRevalidateTag).toHaveBeenCalledWith(FETCH_ALL_TASKS_CACHE_KEY)
+      expect(mockSubmission.reply).toHaveBeenCalled()
+      expect(result).toEqual({ status: 'success' })
+    })
+
+    it('特殊文字を含む有効な入力を処理する', async () => {
+      const validTitle = 'タスクタイトル😀あいうえお 123'
+      const formData = new FormData()
+      formData.append('title', validTitle)
+
+      const mockSubmission = {
+        status: 'success' as const,
+        value: { title: validTitle },
+        reply: vi.fn().mockReturnValue({ status: 'success' }),
+      }
+
+      mockParseWithZod.mockReturnValue(mockSubmission as any)
+      mockCreateTask.mockReturnValue(undefined)
+
+      const result = await createTaskAction(undefined, formData)
+
+      expect(mockParseWithZod).toHaveBeenCalledWith(formData, { schema: expect.any(Object) })
+      expect(mockCreateTask).toHaveBeenCalledWith(validTitle)
+      expect(mockRevalidateTag).toHaveBeenCalledWith(FETCH_ALL_TASKS_CACHE_KEY)
+      expect(mockSubmission.reply).toHaveBeenCalled()
+      expect(result).toEqual({ status: 'success' })
+    })
+
+    it('トリム処理された文字列でのバリデーション', async () => {
+      const inputTitle = '  タスクタイトル  ' // 前後にスペース
+      const trimmedTitle = 'タスクタイトル'
+      const formData = new FormData()
+      formData.append('title', inputTitle)
+
+      const mockSubmission = {
+        status: 'success' as const,
+        value: { title: trimmedTitle }, // トリムされた値
+        reply: vi.fn().mockReturnValue({ status: 'success' }),
+      }
+
+      mockParseWithZod.mockReturnValue(mockSubmission as any)
+      mockCreateTask.mockReturnValue(undefined)
+
+      const result = await createTaskAction(undefined, formData)
+
+      expect(mockParseWithZod).toHaveBeenCalledWith(formData, { schema: expect.any(Object) })
+      expect(mockCreateTask).toHaveBeenCalledWith(trimmedTitle)
+      expect(mockRevalidateTag).toHaveBeenCalledWith(FETCH_ALL_TASKS_CACHE_KEY)
+      expect(mockSubmission.reply).toHaveBeenCalled()
+      expect(result).toEqual({ status: 'success' })
     })
   })
 

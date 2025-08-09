@@ -22,4 +22,5 @@ export const TASK_ERROR_MESSAGES = {
 export const TITLE_VALIDATION = {
   MIN_LENGTH: { value: 1, message: 'タスクタイトルは1文字以上で入力してください' },
   MAX_LENGTH: { value: 255, message: 'タスクタイトルは255文字以内で入力してください' },
-} as const satisfies Record<string, { value: number; message: string }>
+  NOT_STRING: { message: 'タスクタイトルは文字列である必要があります' },
+} as const satisfies Record<string, { value?: number; message: string }>

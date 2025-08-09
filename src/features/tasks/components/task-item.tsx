@@ -17,35 +17,45 @@ export function TaskItem({ task }: Record<'task', TaskList[number]>) {
 
   return (
     <Card
-      className={cn('transition-all duration-200 hover:shadow-sm', isCompleted && 'bg-muted/50')}
+      className={cn(
+        'w-full transition-all duration-200 hover:shadow-sm',
+        isCompleted && 'bg-muted/50',
+      )}
       role="listitem"
     >
       <CardContent className="p-4">
-        <div className="flex items-center justify-between gap-3">
-          <div className="flex items-center gap-3">
+        <div className="flex items-start justify-between gap-3">
+          <div className="flex min-w-0 flex-1 items-start gap-3 overflow-hidden">
             <Checkbox
               id={`task-${task.id}`}
               checked={isCompleted}
               onCheckedChange={handleStatusToggle}
               disabled={isPending}
               aria-label={`${task.title}を${isCompleted ? '未完了' : '完了'}にする`}
-              className="cursor-pointer"
+              className="mt-0.5 flex-shrink-0 cursor-pointer"
               data-testid={`task-checkbox-${task.id}`}
             />
-            <Label
-              htmlFor={`task-${task.id}`}
-              className={cn(
-                'cursor-pointer font-medium text-base',
-                isCompleted ? 'text-muted-foreground line-through' : 'text-foreground',
-              )}
-              data-testid={`task-title-${task.id}`}
-            >
-              {task.title}
-            </Label>
-            <StatusBadge isCompleted={isCompleted} />
+            <div className="flex min-w-0 flex-1 flex-col gap-2 overflow-hidden sm:flex-row sm:items-center sm:gap-3">
+              <Label
+                htmlFor={`task-${task.id}`}
+                className={cn(
+                  'overflow-wrap-anywhere min-w-0 cursor-pointer break-all font-medium text-base leading-relaxed',
+                  isCompleted ? 'text-muted-foreground line-through' : 'text-foreground',
+                )}
+                data-testid={`task-title-${task.id}`}
+                style={{ wordBreak: 'break-word', overflowWrap: 'anywhere' }}
+              >
+                {task.title}
+              </Label>
+              <div className="flex-shrink-0">
+                <StatusBadge isCompleted={isCompleted} />
+              </div>
+            </div>
           </div>
 
-          <TaskDeleteButton taskId={task.id} isDisabled={isPending} />
+          <div className="flex-shrink-0">
+            <TaskDeleteButton taskId={task.id} isDisabled={isPending} />
+          </div>
         </div>
 
         <div className="mt-2 ml-6 flex items-center gap-1 text-muted-foreground text-xs">

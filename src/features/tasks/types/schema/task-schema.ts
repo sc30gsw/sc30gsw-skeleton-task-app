@@ -5,10 +5,15 @@ import { TITLE_VALIDATION } from '~/features/tasks/constants/validation'
 export const taskStatusSchema = z.enum([TASK_STATUS.INCOMPLETE, TASK_STATUS.COMPLETE])
 export const createTaskSchema = z.object({
   title: z
-    .string()
+    .string({
+      error: (issue) =>
+        issue.input === undefined
+          ? TITLE_VALIDATION.MIN_LENGTH.message
+          : TITLE_VALIDATION.NOT_STRING.message,
+    })
+    .trim()
     .min(TITLE_VALIDATION.MIN_LENGTH.value, TITLE_VALIDATION.MIN_LENGTH.message)
-    .max(TITLE_VALIDATION.MAX_LENGTH.value, TITLE_VALIDATION.MAX_LENGTH.message)
-    .trim(),
+    .max(TITLE_VALIDATION.MAX_LENGTH.value, TITLE_VALIDATION.MAX_LENGTH.message),
 })
 
 export const updateTaskSchema = z.object({
@@ -19,8 +24,12 @@ export const updateTaskSchema = z.object({
 const taskSchema = z.object({
   id: z.uuid(),
   title: z
-    .string()
-    .min(TITLE_VALIDATION.MIN_LENGTH.value, TITLE_VALIDATION.MIN_LENGTH.message)
+    .string({
+      error: (issue) =>
+        issue.input === undefined
+          ? TITLE_VALIDATION.MIN_LENGTH.message
+          : TITLE_VALIDATION.NOT_STRING.message,
+    })
     .max(TITLE_VALIDATION.MAX_LENGTH.value, TITLE_VALIDATION.MAX_LENGTH.message),
   status: taskStatusSchema,
   createdAt: z.string(),

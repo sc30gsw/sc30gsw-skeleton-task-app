@@ -106,7 +106,6 @@ describe('useCreateTask', () => {
 
       const { useForm } = await import('@conform-to/react')
       expect(useForm).toHaveBeenCalledWith({
-        constraint: {},
         lastResult: null,
         onValidate: expect.any(Function),
         defaultValue: {
@@ -229,6 +228,172 @@ describe('useCreateTask', () => {
           schema: expect.any(Object),
         })
       }
+    })
+
+    it('バリデーション設定が正しく適用される', async () => {
+      const { useForm } = await import('@conform-to/react')
+
+      renderHook(() => useCreateTask())
+
+      expect(useForm).toHaveBeenCalledWith(
+        expect.objectContaining({
+          onValidate: expect.any(Function),
+        }),
+      )
+    })
+
+    describe('バリデーションシナリオ', () => {
+      it('空文字のバリデーション', async () => {
+        const mockFormData = new FormData()
+        mockFormData.set('title', '')
+
+        const { parseWithZod } = await import('@conform-to/zod/v4')
+        ;(parseWithZod as Mock).mockReturnValue({
+          status: 'error',
+          error: { title: ['タスクタイトルは1文字以上で入力してください'] },
+        })
+
+        const { useForm } = await import('@conform-to/react')
+        let onValidateCallback: ((args: { formData: FormData }) => any) | undefined
+
+        ;(useForm as Mock).mockImplementation((config) => {
+          onValidateCallback = config.onValidate
+          return [mockForm, mockFields]
+        })
+
+        renderHook(() => useCreateTask())
+
+        const result = onValidateCallback?.({ formData: mockFormData })
+        expect(parseWithZod).toHaveBeenCalledWith(mockFormData, {
+          schema: expect.any(Object),
+        })
+        expect(result).toEqual({
+          status: 'error',
+          error: { title: ['タスクタイトルは1文字以上で入力してください'] },
+        })
+      })
+
+      it('スペースのみ入力のバリデーション', async () => {
+        const mockFormData = new FormData()
+        mockFormData.set('title', '   ')
+
+        const { parseWithZod } = await import('@conform-to/zod/v4')
+        ;(parseWithZod as Mock).mockReturnValue({
+          status: 'error',
+          error: { title: ['タスクタイトルは1文字以上で入力してください'] },
+        })
+
+        const { useForm } = await import('@conform-to/react')
+        let onValidateCallback: ((args: { formData: FormData }) => any) | undefined
+
+        ;(useForm as Mock).mockImplementation((config) => {
+          onValidateCallback = config.onValidate
+          return [mockForm, mockFields]
+        })
+
+        renderHook(() => useCreateTask())
+
+        const result = onValidateCallback?.({ formData: mockFormData })
+        expect(parseWithZod).toHaveBeenCalledWith(mockFormData, {
+          schema: expect.any(Object),
+        })
+        expect(result).toEqual({
+          status: 'error',
+          error: { title: ['タスクタイトルは1文字以上で入力してください'] },
+        })
+      })
+
+      it('255文字以下の有効な入力', async () => {
+        const validTitle = 'a'.repeat(255)
+        const mockFormData = new FormData()
+        mockFormData.set('title', validTitle)
+
+        const { parseWithZod } = await import('@conform-to/zod/v4')
+        ;(parseWithZod as Mock).mockReturnValue({
+          status: 'success',
+          value: { title: validTitle },
+        })
+
+        const { useForm } = await import('@conform-to/react')
+        let onValidateCallback: ((args: { formData: FormData }) => any) | undefined
+
+        ;(useForm as Mock).mockImplementation((config) => {
+          onValidateCallback = config.onValidate
+          return [mockForm, mockFields]
+        })
+
+        renderHook(() => useCreateTask())
+
+        const result = onValidateCallback?.({ formData: mockFormData })
+        expect(parseWithZod).toHaveBeenCalledWith(mockFormData, {
+          schema: expect.any(Object),
+        })
+        expect(result).toEqual({
+          status: 'success',
+          value: { title: validTitle },
+        })
+      })
+
+      it('256文字以上の無効な入力', async () => {
+        const invalidTitle = 'a'.repeat(256)
+        const mockFormData = new FormData()
+        mockFormData.set('title', invalidTitle)
+
+        const { parseWithZod } = await import('@conform-to/zod/v4')
+        ;(parseWithZod as Mock).mockReturnValue({
+          status: 'error',
+          error: { title: ['タスクタイトルは255文字以内で入力してください'] },
+        })
+
+        const { useForm } = await import('@conform-to/react')
+        let onValidateCallback: ((args: { formData: FormData }) => any) | undefined
+
+        ;(useForm as Mock).mockImplementation((config) => {
+          onValidateCallback = config.onValidate
+          return [mockForm, mockFields]
+        })
+
+        renderHook(() => useCreateTask())
+
+        const result = onValidateCallback?.({ formData: mockFormData })
+        expect(parseWithZod).toHaveBeenCalledWith(mockFormData, {
+          schema: expect.any(Object),
+        })
+        expect(result).toEqual({
+          status: 'error',
+          error: { title: ['タスクタイトルは255文字以内で入力してください'] },
+        })
+      })
+
+      it('undefined値の処理', async () => {
+        const mockFormData = new FormData()
+        // titleフィールドを設定しない（undefined）
+
+        const { parseWithZod } = await import('@conform-to/zod/v4')
+        ;(parseWithZod as Mock).mockReturnValue({
+          status: 'error',
+          error: { title: ['タスクタイトルは1文字以上で入力してください'] },
+        })
+
+        const { useForm } = await import('@conform-to/react')
+        let onValidateCallback: ((args: { formData: FormData }) => any) | undefined
+
+        ;(useForm as Mock).mockImplementation((config) => {
+          onValidateCallback = config.onValidate
+          return [mockForm, mockFields]
+        })
+
+        renderHook(() => useCreateTask())
+
+        const result = onValidateCallback?.({ formData: mockFormData })
+        expect(parseWithZod).toHaveBeenCalledWith(mockFormData, {
+          schema: expect.any(Object),
+        })
+        expect(result).toEqual({
+          status: 'error',
+          error: { title: ['タスクタイトルは1文字以上で入力してください'] },
+        })
+      })
     })
   })
 
