@@ -73,9 +73,9 @@ describe('createTaskAction', () => {
 
       const mockSubmission = {
         status: 'error' as const,
-        reply: vi.fn().mockReturnValue({ 
-          status: 'error', 
-          error: { title: ['タスクタイトルは1文字以上で入力してください'] } 
+        reply: vi.fn().mockReturnValue({
+          status: 'error',
+          error: { title: ['タスクタイトルは1文字以上で入力してください'] },
         }),
       }
 
@@ -87,9 +87,9 @@ describe('createTaskAction', () => {
       expect(mockCreateTask).not.toHaveBeenCalled()
       expect(mockRevalidateTag).not.toHaveBeenCalled()
       expect(mockSubmission.reply).toHaveBeenCalled()
-      expect(result).toEqual({ 
-        status: 'error', 
-        error: { title: ['タスクタイトルは1文字以上で入力してください'] } 
+      expect(result).toEqual({
+        status: 'error',
+        error: { title: ['タスクタイトルは1文字以上で入力してください'] },
       })
     })
 
@@ -99,9 +99,9 @@ describe('createTaskAction', () => {
 
       const mockSubmission = {
         status: 'error' as const,
-        reply: vi.fn().mockReturnValue({ 
-          status: 'error', 
-          error: { title: ['タスクタイトルは1文字以上で入力してください'] } 
+        reply: vi.fn().mockReturnValue({
+          status: 'error',
+          error: { title: ['タスクタイトルは1文字以上で入力してください'] },
         }),
       }
 
@@ -113,9 +113,9 @@ describe('createTaskAction', () => {
       expect(mockCreateTask).not.toHaveBeenCalled()
       expect(mockRevalidateTag).not.toHaveBeenCalled()
       expect(mockSubmission.reply).toHaveBeenCalled()
-      expect(result).toEqual({ 
-        status: 'error', 
-        error: { title: ['タスクタイトルは1文字以上で入力してください'] } 
+      expect(result).toEqual({
+        status: 'error',
+        error: { title: ['タスクタイトルは1文字以上で入力してください'] },
       })
     })
 
@@ -126,9 +126,9 @@ describe('createTaskAction', () => {
 
       const mockSubmission = {
         status: 'error' as const,
-        reply: vi.fn().mockReturnValue({ 
-          status: 'error', 
-          error: { title: ['タスクタイトルは255文字以内で入力してください'] } 
+        reply: vi.fn().mockReturnValue({
+          status: 'error',
+          error: { title: ['タスクタイトルは255文字以内で入力してください'] },
         }),
       }
 
@@ -140,9 +140,9 @@ describe('createTaskAction', () => {
       expect(mockCreateTask).not.toHaveBeenCalled()
       expect(mockRevalidateTag).not.toHaveBeenCalled()
       expect(mockSubmission.reply).toHaveBeenCalled()
-      expect(result).toEqual({ 
-        status: 'error', 
-        error: { title: ['タスクタイトルは255文字以内で入力してください'] } 
+      expect(result).toEqual({
+        status: 'error',
+        error: { title: ['タスクタイトルは255文字以内で入力してください'] },
       })
     })
 
@@ -153,9 +153,9 @@ describe('createTaskAction', () => {
 
       const mockSubmission = {
         status: 'error' as const,
-        reply: vi.fn().mockReturnValue({ 
-          status: 'error', 
-          error: { title: ['タスクタイトルは文字列である必要があります'] } 
+        reply: vi.fn().mockReturnValue({
+          status: 'error',
+          error: { title: ['タスクタイトルは文字列である必要があります'] },
         }),
       }
 
@@ -167,9 +167,9 @@ describe('createTaskAction', () => {
       expect(mockCreateTask).not.toHaveBeenCalled()
       expect(mockRevalidateTag).not.toHaveBeenCalled()
       expect(mockSubmission.reply).toHaveBeenCalled()
-      expect(result).toEqual({ 
-        status: 'error', 
-        error: { title: ['タスクタイトルは文字列である必要があります'] } 
+      expect(result).toEqual({
+        status: 'error',
+        error: { title: ['タスクタイトルは文字列である必要があります'] },
       })
     })
   })
@@ -211,9 +211,9 @@ describe('createTaskAction', () => {
 
       const mockSubmission = {
         status: 'error' as const,
-        reply: vi.fn().mockReturnValue({ 
-          status: 'error', 
-          error: { title: ['タスクタイトルは1文字以上で入力してください'] } 
+        reply: vi.fn().mockReturnValue({
+          status: 'error',
+          error: { title: ['タスクタイトルは1文字以上で入力してください'] },
         }),
       }
 
@@ -223,9 +223,9 @@ describe('createTaskAction', () => {
 
       expect(mockParseWithZod).toHaveBeenCalledWith(formData, { schema: expect.any(Object) })
       expect(mockSubmission.reply).toHaveBeenCalled()
-      expect(result).toEqual({ 
-        status: 'error', 
-        error: { title: ['タスクタイトルは1文字以上で入力してください'] } 
+      expect(result).toEqual({
+        status: 'error',
+        error: { title: ['タスクタイトルは1文字以上で入力してください'] },
       })
     })
 

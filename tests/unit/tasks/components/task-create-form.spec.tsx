@@ -231,7 +231,9 @@ describe('TaskCreateForm', () => {
         action: mockAction,
         isPending: false,
         fields: {
-          title: createMockFieldMetadata('title', ['タスクタイトルは255文字以内で入力してください']),
+          title: createMockFieldMetadata('title', [
+            'タスクタイトルは255文字以内で入力してください',
+          ]),
         },
       })
 
@@ -252,7 +254,7 @@ describe('TaskCreateForm', () => {
         fields: {
           title: createMockFieldMetadata('title', [
             'タスクタイトルは1文字以上で入力してください',
-            'タスクタイトルは文字列である必要があります'
+            'タスクタイトルは文字列である必要があります',
           ]),
         },
       })
@@ -286,7 +288,7 @@ describe('TaskCreateForm', () => {
       const errorId = 'title-error'
       const titleField = createMockFieldMetadata('title', ['エラーメッセージ'])
       titleField.errorId = errorId
-      
+
       useCreateTask.mockReturnValue({
         form: createMockFormMetadata(),
         action: mockAction,
